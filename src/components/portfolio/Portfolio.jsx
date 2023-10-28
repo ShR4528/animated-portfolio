@@ -1,5 +1,6 @@
+import { useRef } from 'react';
 import './portfolio.scss';
-import { motion, useScroll } from 'framer-motion';
+import { motion, useScroll, useSpring } from 'framer-motion';
 
 const items = [
   {
@@ -29,17 +30,39 @@ const items = [
 ];
 
 const Single = ({ item }) => {
-  return <section>{item.title}</section>;
+  const ref = useRef();
+  return (
+    <section ref={ref}>
+      <div className='container'>
+        <img src={item.img} alt='' />
+        <div className='textContainer'>
+          <h2>{item.title}</h2>
+          <p>{title.desc}</p>
+          <button>See Demo</button>
+        </div>
+      </div>
+    </section>
+  );
 };
 
-const { scrollYProgress } = useScroll();
-
 const Portfolio = () => {
+  const ref = useRef();
+
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ['end end', 'start start'],
+  });
+
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+  });
+
   return (
     <div className='portfolio'>
       <div className='progress'>
         <h1>Featured works</h1>
-        <div className='progressBar'></div>
+        <motion.div style={{ scaleX }} className='progressBar'></motion.div>
       </div>
       {items.map((item) => (
         <Single item={item} key={item.id} />

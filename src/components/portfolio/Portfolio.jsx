@@ -34,7 +34,6 @@ const Single = ({ item }) => {
 
   const { scrollYProgress } = useScroll({
     target: ref,
-    //offset: ['start start', 'end start'],
   });
 
   const y = useTransform(scrollYProgress, [0, 1], [-300, 300]);
@@ -44,12 +43,12 @@ const Single = ({ item }) => {
       <div className='container'>
         <div className='wrapper'>
           <div className='imageContainer' ref={ref}>
-            <img src={item.img} alt='' />
+            <img src={item.img} alt='photo' />
           </div>
           <motion.div className='textContainer' style={{ y }}>
             {/* style={{ y }} */}
             <h2>{item.title}</h2>
-            <p>{title.desc}</p>
+            <p>{item.desc}</p>
             <button>See Demo</button>
           </motion.div>
         </div>

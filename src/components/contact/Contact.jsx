@@ -1,6 +1,7 @@
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import './contact.scss';
 import { motion, useInView } from 'framer-motion';
+import emailjs from '@emailjs/browser';
 
 const variants = {
   initial: {
@@ -19,7 +20,64 @@ const variants = {
 
 const Contact = () => {
   const ref = useRef();
+  const formRef = useRef();
+  const [error, setError] = useState(false);
+  const [success, setSuccess] = useState(false);
+
   const isInView = useInView(ref, { margin: '-100px' });
+
+  const sendEmail = (e) => {
+    e.preventDefault();
+
+    try {
+      emailjs
+        .sendForm(
+          'service_ldyfn0n',
+          'template_r06gtif',
+          formRef.current,
+          '31zas2ViqPJ1Bsqkv'
+        )
+        .then((result) => {
+          setSuccess(true);
+          setError(false);
+          formRef.current.reset();
+        });
+    } catch (error) {
+      console.log('Error:', error);
+      setError(true);
+      setSuccess(false);
+    }
+
+    // emailjs
+    //   .sendForm(
+    //     'service_ldyfn0n',
+    //     'template_r06gtif',
+    //     formRef.current,
+    //     '31zas2ViqPJ1Bsqkv'
+    //   )
+    //   .then(
+    //     (result) => {
+    //       setSuccess(true);
+    //       setError(false);
+    //       formRef.current.reset();
+    //     },
+    //     (error) => {
+    //       setError(true);
+    //       setSuccess(false);
+    //     }
+    //   );
+  };
+
+  useEffect(() => {
+    if (success || error) {
+      const timer = setTimeout(() => {
+        setSuccess(false);
+        setError(false);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [success, error]);
 
   return (
     <motion.div
@@ -73,13 +131,17 @@ const Contact = () => {
           </svg>
         </motion.div>
         <motion.form
+          ref={formRef}
+          onSubmit={sendEmail}
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           transition={{ delay: 4, duration: 1 }}>
-          <input type='text' required placeholder='Name' />
-          <input type='email' required placeholder='Email' />
-          <textarea rows={8} placeholder='Message' />
+          <input type='text' required placeholder='Name' name='name' />
+          <input type='email' required placeholder='Email' name='email' />
+          <textarea rows={8} placeholder='Message' name='message' />
           <button>Submit</button>
+          {success && 'Success'}
+          {error && 'Error'}
         </motion.form>
       </div>
     </motion.div>
